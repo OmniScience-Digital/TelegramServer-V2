@@ -1,0 +1,100 @@
+
+.
+├── Dockerfile
+├── assets
+│   ├── grok.png
+│   ├── logo.png
+│   ├── mineprod.jpeg
+│   ├── omniscience.png
+│   ├── prodmine.jpeg
+│   └── shift.png
+├── configs
+│   ├── dynamo_db.js
+│   └── postgress_db.js
+├── controllers
+│   ├── alarm.pdf.controller.js
+│   ├── alarm.stockpile.crontroller.js
+│   ├── cron.controller.js
+│   ├── cronStockpile.controller.js
+│   ├── fetchAllIot.controller.js
+│   ├── internalStatusreport.controller.js
+│   ├── mqtt.controller.js
+│   └── report.controller.js
+├── crons
+│   ├── dev
+│   │   └── processScheduledJobs.js
+│   └── prod
+│       ├── dayShift.job.js
+│       ├── index.prod.js
+│       ├── nightShift.job.js
+│       ├── processScheduledJobs.js
+│       └── stockpile.job.js
+├── deploy.sh
+├── docker-compose.yml
+├── gitpush.sh
+├── helpers
+│   ├── charts
+│   │   └── chart_helper.js
+│   ├── email
+│   │   └── email_helper.js
+│   ├── headers.helper.js
+│   ├── pdf_Components
+│   │   ├── pdf_footer.js
+│   │   ├── pdf_header.js
+│   │   ├── pdf_tables.js
+│   │   └── plot_graphs.js
+│   ├── pdf_templates
+│   │   ├── internalStatus_template.js
+│   │   ├── template_1_pdf.js
+│   │   └── template_Stockpile.js
+│   ├── scalesCalc.helper.js
+│   ├── stockpile.headers.js
+│   └── telegram
+│       └── telegram.helper.js
+├── index.js
+├── package-lock.json
+├── package.json
+├── repositories
+│   ├── dynamodb_repository.js
+│   ├── fetchAllIots.repository.js
+│   ├── internalreport.repository.js
+│   └── postgress_repository.js
+├── resources
+│   ├──  iot.resource.js
+│   ├── cordinates.resource.js
+│   ├── data.resource.js
+│   ├── report.resource.js
+│   └── static.headers.resource.js
+├── routes
+│   ├── alarm.route.api.js
+│   ├── api.route.js
+│   ├── fetchAllIots.api.js
+│   ├── internalstatusreport.api.js
+│   └── reportdata.api.js
+├── server.js
+├── services
+│   ├── fetchAllIots.service.js
+│   ├── mqtt.service.js
+│   ├── report.service.js
+│   ├── stockpile.service.js
+│   └── telegram.service.js
+├── setup.txt
+├── stockpileworkflow.js
+├── test.js
+├── utilities
+│   ├── flow.utility.js
+│   ├── formulas.utility.js
+│   ├── parallel.scale.utility.js
+│   ├── plc.scale.utility.js
+│   ├── reportstatus.utility.js
+│   ├── series.scale.utility.js
+│   ├── shift_utility.js
+│   ├── shiftons.utility.js
+│   ├── single.scale.utility.js
+│   └── time.utility.js
+├── utils
+│   └── response.util.js
+├── workflow.js
+└── z
+    └── RMC Blending RMC B 22-02-2025 Test.pdf
+
