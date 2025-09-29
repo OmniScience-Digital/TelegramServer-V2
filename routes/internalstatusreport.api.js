@@ -7,6 +7,4 @@ const statusreportController = require('../controllers/internalStatusreport.cont
 router.get('/statusreport', statusreportController.Statusreportcontroller)
 
 
-
-
 module.exports = router

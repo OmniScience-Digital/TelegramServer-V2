@@ -15,7 +15,7 @@ const monthNames = [
 const shiftData = [
     [
         {
-            text: 'Shift:',
+            text: 'Date:',
             width: shiftkeylen,
         },
         {

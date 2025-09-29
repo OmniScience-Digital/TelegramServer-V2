@@ -3,9 +3,10 @@ var { shiftData, monthData,letbottom} = require('../resources/static.headers.res
 
 
 
-module.exports.headers_helper = (shift, reportDataArray, monthStart, endTime, startTime,stockpileObj) => {
+module.exports.headers_helper = (openTime,shift, reportDataArray, monthStart, endTime, startTime,stockpileObj) => {
 
     try {
+        
 
         let  openTime,closeTime,MTDTotalizer;
 
@@ -33,36 +34,27 @@ module.exports.headers_helper = (shift, reportDataArray, monthStart, endTime, st
 
         monthData[0][1].text = ' ' + report_start_date + ' ,' + report_start_time;
         monthData[1][1].text = ' ' + reportDataArray.montTodate_Target + ' tons';
-        monthData[2][1].text = ' ' + MTDTotalizer + ' tons';
+        monthData[2][1].text = ' ' + reportDataArray.mtd_achieved + ' tons';
 
+ 
+   
+        let d = new Date(openTime);
+
+  
    
 
-        let d = new Date();
 
-        if (shift === 'day' || shift === 'day2') {
              
-            let date_current = d.toString().split(' ').slice(0, 1).join(' ') + ' ' + d.getDate() + ' ' + d.toLocaleString('default', { month: 'short' }) + ' ' + d.getFullYear();
-
-
-            shiftData[0][1].text = ' ' + date_current;
-        }
-
-
-        else if (shift === 'night') {
-             
-            d.setDate(d.getDate() - 1);
+            d.setDate(d.getDate() );
 
             let date_current = d.toString().split(' ').slice(0, 1).join(' ') + ' ' + d.getDate() + ' ' + d.toLocaleString('default', { month: 'short' }) + ' ' + d.getFullYear();
             shiftData[0][1].text = ' ' + date_current;
 
-        }
-
-
-    
 
         let reportnameDate = d.toISOString().split('T')[0]  + '  ' + endTime;
         let reportDateTime =  shiftData[0][1].text;
 
+        
 
          return   {reportnameDate ,reportDateTime} ;
 

@@ -15,19 +15,19 @@ exports.runReportdata = async (req, res) => {
 
 
     if (Array.isArray(sitesArrays)) {
-    
-        report =sitesArrays;     
-      }
-      else{
+
+        report = sitesArrays;
+    }
+    else {
         report.push(sitesArrays)
-      }
-      
- 
-    
+    }
+
+
+
 
     let reportDataArray;
 
-    let item, startTime, reportTo, email,  dayStart, primaryScalesArray, endTime, sitename, runningtph, maxUtilization, totalMonthTarget, startDay, scaleType, flowtitle, flowiccid, plcIccid, scales,shiftFtp,chatId;
+    let item, startTime, reportTo, email, dayStart, primaryScalesArray, endTime, sitename, runningtph, maxUtilization, totalMonthTarget, startDay, scaleType, flowtitle, flowiccid, plcIccid, scales, shiftFtp, chatId;
 
 
     let items = report;
@@ -43,9 +43,9 @@ exports.runReportdata = async (req, res) => {
             sitename = item.sitename || '';
 
             if (!shift) continue;
-            if(run_type==='off')continue;
+            if (run_type === 'off') continue;
 
-   
+
             console.log(sitename + ' : ')
 
             //get current running date
@@ -74,48 +74,47 @@ exports.runReportdata = async (req, res) => {
             plcIccid = item.plcIccid || '';
             email = item.email || '';
             reportTo = item.reportTo || '';
-            shiftFtp=item.shiftFtp||'';
+            shiftFtp = item.shiftFtp || '';
 
-            chatId= (run_type==='prod')? item.telegramid :(process.env.chartIDTest);
+            chatId = (run_type === 'prod') ? item.telegramid : (process.env.chartIDTest);
 
-            
+
             const { mtd_target, shifts_Ran } = dertemine_numberofShifts(item.dayStart, item.nightStart, item.extraShiftStart, totalMonthTarget, monthstart, shift, enddate)
 
 
             //destructe fore arrays and objects
             const { formulas, primaryScales, virtualDatapoints, reportHeaderRenames, cyclonegraph, plcFlow } = item;
             scales = item.scales || [];
-           
 
-           
+
+
 
             primaryScalesArray = primaryScales.map((scale) => scale) || [];
 
             const parseScales = (otherscales) => {
-            
-            
+
                 // Set default value for otherscales if it's not provided or empty
-                const sortedscales = otherscales && otherscales.length && otherscales[0] !== '[]' 
-                    ? JSON.parse(otherscales[0]) 
+                const sortedscales = otherscales && otherscales.length && otherscales[0] !== '[]'
+                    ? JSON.parse(otherscales[0])
                     : [];
-            
-                 
+
+
                 // Check if sortedscales is an array and map over it
                 return Array.isArray(sortedscales) ? sortedscales.map((scale) => {
                     // Get the key of the object inside scale
                     const scaleKey = Object.keys(scale)[0];
-                    
+
                     // Get the value of the key
                     const scaleValue = scale[scaleKey] || '';
-                    
+
                     // Create the scale object
                     const scaleObject = {};
                     scaleObject[scaleKey] = scaleValue;
-                    
+
                     return scaleObject;
                 }) : [];
             };
-            
+
 
             const plcflowArray = parseScales(plcFlow);
             const cyclonegraphArray = parseScales(cyclonegraph)
@@ -135,15 +134,15 @@ exports.runReportdata = async (req, res) => {
                     case 'single':
                         console.log('Processing single scale type');
 
-                       reportDataArray = await singleScale(startTime, endTime, scales, monthstart, shift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints,shiftFtp);
+                        reportDataArray = await singleScale(startTime, endTime, scales, monthstart, shift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints, shiftFtp);
                         break;
                     case 'series':
                         console.log('Processing series scale type');
-                        reportDataArray = await seriesScale(startTime, endTime, scales, monthstart, flowtitle, flowiccid, shift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints,shiftFtp);
+                        reportDataArray = await seriesScale(startTime, endTime, scales, monthstart, flowtitle, flowiccid, shift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints, shiftFtp);
                         break;
                     case 'parallel':
                         console.log('Processing parallel scale type');
-                        reportDataArray = await parallelScale(startTime, endTime, scales, monthstart, flowtitle, flowiccid, shift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints,shiftFtp);
+                        reportDataArray = await parallelScale(startTime, endTime, scales, monthstart, flowtitle, flowiccid, shift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints, shiftFtp);
                         break;
                 }
             } else {
@@ -160,11 +159,11 @@ exports.runReportdata = async (req, res) => {
 
 
 
-            
-             let { reportnameDate, reportDateTime } = await headers_helper(shift, reportDataArray, monthstart, endTime, startTime);
-             
+
+            let { reportnameDate, reportDateTime } = await headers_helper(shift, reportDataArray, monthstart, endTime, startTime);
+
             await populateObjects(reportDataArray, chatId, sitename, reportHeaderRenames, reportDateTime, reportTo, email, reportnameDate, run_type);
-           
+
         }
     } catch (error) {
         console.error('Error in reportdata:', error); // Log the error

@@ -33,34 +33,34 @@ async function stockpilepopulateObjects(reportdata,sitedata, chatId, sitename, r
         .then(async (pdfBuffer) => {
 
     
-            switch (reportTo) {
-                case 'Email':
-                    // Email helper
-                    await handleEmailNotification(email, reportTime, pdfBuffer, sitename, report_name);
-                    break;
+            // switch (reportTo) {
+            //     case 'Email':
+            //         // Email helper
+            //         await handleEmailNotification(email, reportTime, pdfBuffer, sitename, report_name);
+            //         break;
 
-                case 'Telegram':
-                    // Send to Telegram based on the flag
-                    flag === "test"
-                        ? await handleTelegramNotification((process.env.chartIDTest), pdfBuffer, report_name)
-                        : await handleTelegramNotification(chatId, pdfBuffer, report_name);
-                    break;
+            //     case 'Telegram':
+            //         // Send to Telegram based on the flag
+            //         flag === "test"
+            //             ? await handleTelegramNotification((process.env.chartIDTest), pdfBuffer, report_name)
+            //             : await handleTelegramNotification(chatId, pdfBuffer, report_name);
+            //         break;
 
-                case 'Telegram & Email':
-                    // Send to both Telegram and Email based on the flag
-                    flag === "test"
-                        ? (await handleEmailNotification("report-testing@omniscience.digital", reportTime, pdfBuffer, sitename, report_name),
-                          await handleTelegramNotification((process.env.chartIDTest), pdfBuffer, report_name))
+            //     case 'Telegram & Email':
+            //         // Send to both Telegram and Email based on the flag
+            //         flag === "test"
+            //             ? (await handleEmailNotification("report-testing@omniscience.digital", reportTime, pdfBuffer, sitename, report_name),
+            //               await handleTelegramNotification((process.env.chartIDTest), pdfBuffer, report_name))
                         
-                        : (await handleEmailNotification(email, reportTime, pdfBuffer, sitename, report_name),
-                            await handleTelegramNotification(chatId, pdfBuffer, report_name));
-                    break;
+            //             : (await handleEmailNotification(email, reportTime, pdfBuffer, sitename, report_name),
+            //                 await handleTelegramNotification(chatId, pdfBuffer, report_name));
+            //         break;
 
-                default:
-                    // Handle cases where reportTo doesn't match any expected values
-                    console.error("Invalid reportTo value:", reportTo);
-                    break;
-            }
+            //     default:
+            //         // Handle cases where reportTo doesn't match any expected values
+            //         console.error("Invalid reportTo value:", reportTo);
+            //         break;
+            // }
 
 
         })

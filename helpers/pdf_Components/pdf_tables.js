@@ -408,7 +408,7 @@ module.exports.drawStockpileHeaderRectangles = (doc, reportHeaderRenames,sitedat
 
     
 
-    letbottom.push([{ text: 'Shift FTP (t):', width: 0.46, }, { text: ' ' + reportDataArray.shifttons + '  tons', width: 0.6, }])
+    letbottom.push([{ text: 'Shift  (t):', width: 0.46, }, { text: ' ' + reportDataArray.shifttons + '  tons', width: 0.6, }])
 
 
 
@@ -482,7 +482,7 @@ module.exports.drawStockpileHeaderRectangles = (doc, reportHeaderRenames,sitedat
 
     // // Initialize a Set to keep track of unique keys
     const uniqueKeys = new Set();
-    var mykey = 'Shift FTP (t):';
+    var mykey = 'Stockpile tons (t):';
 
     // Iterate through shiftstats
     for (let i = 0; i < shiftstats.length; i++) {
@@ -646,8 +646,6 @@ function createTable(doc, rows, posY, posX) {
   doc.moveDown(2);
   doc.text('', doc.page.margins.left);
 }
-
-
 
 
 module.exports.table = async (doc, dataArray, posY, posX) => {
@@ -1164,13 +1162,8 @@ module.exports.Stockpiletable = async (doc, dataArray, posY, posX) => {
   }
 
   y += daytonRowCellHeight;
-console.log(`S/P Row Drawn at Y=${y}, Max Allowed Y=${maxY}`);
-  console.log("Page height:", doc.page.height, "Bottom margin:", doc.page.margins.bottom);
-
-
 
 }
-
 
 
 module.exports.flowtable = async (doc, dataArray, posY, posX) => {

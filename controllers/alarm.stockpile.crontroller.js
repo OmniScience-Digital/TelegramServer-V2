@@ -72,43 +72,42 @@ exports.alarmStockpile = async (req, res) => {
         const jhbTimestamp = getJhbTimestamp();
 
 
-        if (previousValue !== userFriendlyMessage) {
-            await client.set('message', userFriendlyMessage);
-            const telegramMsg = formatTelegramMessage(userFriendlyMessage, Cv06Totalizer, shiftStats);
-            await populateObjects(telegramMsg, chatId);
+        // if (previousValue !== userFriendlyMessage) {
+        //     await client.set('message', userFriendlyMessage);
+        //     const telegramMsg = formatTelegramMessage(userFriendlyMessage, Cv06Totalizer, shiftStats);
+        //     await populateObjects(telegramMsg, chatId);
 
-            if (messageResult === 'open') {
-                await client.set('openTime', jhbTimestamp);
-            } else if (messageResult === 'closed' || messageResult === 'reset') {
-                await client.set('closeTime', jhbTimestamp);
-                const openTime = await client.get('openTime');
+        //     if (messageResult === 'open') {
+        //         await client.set('openTime', jhbTimestamp);
+        //     } else if (messageResult === 'closed' || messageResult === 'reset') {
+        //         await client.set('closeTime', jhbTimestamp);
+        //         const openTime = await client.get('openTime');
             
 
-                // Delay execution for 10 minutes 
-               await new Promise(resolve => setTimeout(resolve, 600000));
+        //         // Delay execution for 10 minutes 
+        //        await new Promise(resolve => setTimeout(resolve, 600000));
 
-               const closeCurrentTime = getJhbTimestamp();
+        //        const closeCurrentTime = getJhbTimestamp();
 
-               console.log(`Open Time: ${openTime}`);
-               console.log(`Close Time: ${closeCurrentTime}`);
+        //        console.log(`Open Time: ${openTime}`);
+        //        console.log(`Close Time: ${closeCurrentTime}`);
 
-               const alarmObj = { openTime, closeTime: closeCurrentTime, ...req.body };
+        //        const alarmObj = { openTime, closeTime: closeCurrentTime, ...req.body };
                
 
-               await reportdata(alarmObj, item,messageResult);
-               await client.set('openTime', '');
-            }
+        //        await reportdata(alarmObj, item,messageResult);
+        //        await client.set('openTime', '');
+        //     }
 
-            console.log('Stockpile Open Time', await client.get('openTime'));
-        }
+        //     console.log('Stockpile Open Time', await client.get('openTime'));
+        // }
 
 
-
-        // let telegramAlarm = await  reportdata({
-        //     'openTime':'2025-04-01 14:08:02',
-        //     'closeTime':'2025-04-09 15:15:22',
-        //     ...req.body
-        // },item);
+//   let telegramAlarm = await  reportdata({
+//             'openTime':'2025-06-09 19:10',
+//             'closeTime':'2025-06-10 04:52',
+//             ...req.body
+//         },item);
 
         res.send('Done');
     } catch (error) {

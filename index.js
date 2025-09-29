@@ -9,7 +9,11 @@ const port = process.env.PORT || 8000;
 
 // Trust the proxy
 app.set('trust proxy', true);
-app.use(express.json()); // Middleware to parse JSON bodies
+
+
+app.use(express.json({ limit: '10mb' })); // Increase limit as needed
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
 
 //Enable Cors
 app.use(cors({
@@ -37,12 +41,7 @@ app.use('/', routes);
 app.use(compression());
 
 
-//Parse URL-encoded bodies
-app.use(express.urlencoded({extended:true}))
-
-
 //Error handling middleware
-
 app.use((err,req,res,next)=>{
     console.log(err.stack)
     res.status(500).send('Something went wrong !')

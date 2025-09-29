@@ -115,7 +115,6 @@ module.exports.flowDataPLC = async(graphtitle,startTime, endTime,startdate,endda
     const title = scale[key];
     
 
-   
 
    
     try {

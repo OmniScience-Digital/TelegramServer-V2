@@ -3,7 +3,7 @@ const { seriescaleCalcsFunc } = require('./series.scale.utility');
 const { singlecaleCalcsFunc } = require('./single.scale.utility');
 const { parallelcaleCalcsFunc } = require('./parallel.scale.utility')
 const { plcScaleCalcsFunc, plcScale_noTypeCalcsFunc } = require('./plc.scale.utility.js')
-const { handleShiftons, handlePlcShiftons, handleStockpileShiftons, handleAlarmStockpileShiftons } = require('./shiftons.utility');
+const { handleShiftons, handlePlcShiftons, handleStockpileShiftons, handleAlarmStockpileShiftons,handleHourlyShiftons } = require('./shiftons.utility');
 const { flowutility, flowObjectValues, flowDataPLC, flowObjectDataPLC, cycloneDataPLC, StockpileValues } = require('./flow.utility');
 const { calculatorCalculations, getValueByKey, parseFormulas, calculatorCalculationsStockpile } = require('./formulas.utility');
 const { createDonutChart } = require('../helpers/charts/chart_helper');
@@ -217,8 +217,6 @@ module.exports.parallelScale = async (startTime, endTime, scales, monthstart, fl
 
 module.exports.plcScale = async (startTime, endTime, scales, plcIccid, plcFlow, cyclonegraph, monthstart, shift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints) => {
     try {
-
-
         //pass correct dt  time
         var postgress_start = subtractTwoHours(startTime);
         var postgress_end = subtractTwoHours(endTime);
@@ -245,7 +243,7 @@ module.exports.plcScale = async (startTime, endTime, scales, plcIccid, plcFlow, 
 
         //handle shift tons 
         let tonnage = await handlePlcShiftons(myflowBuffer, plcIccid, shift, postgress_start, postgress_end, startdate, enddate, scales, monthstart, primaryScalesArray, mtd_target, scaleType, canvas, virtualDatapoints, maxUtilization)
-
+        
 
 
         let shiftStats = await calculatorCalculations(formulas, tonnage, flow_Values)
@@ -466,6 +464,8 @@ module.exports.reportStatusUtilityPlc = async (startTime, endTime, triggerStart,
 
 module.exports.StockpileScales = async (startTime, endTime, scales, primaryScalesArray, spNum, position, progressiveDay,progressiveRawtons,progressiveWashtons, plcIccid, shift, formulas, setpoints) => {
     try {
+
+        
         // Adjust time for Postgres
         const postgressStart = subtractTwoHours(startTime);
         const postgressEnd = subtractTwoHours(endTime);
@@ -589,7 +589,8 @@ module.exports.alarmPdfStockPile = async (openTime, closeTime, scales, plcIccid,
         var postgress_start = subtractTwoHours(startTime);
         var postgress_end = subtractTwoHours(endTime);
 
-        
+     
+       
 
         //get   flow graphs
         const myflowBuffer = await flowDataPLC("flow", postgress_start, postgress_end, startdate, enddate, plcFlow, canvas, plcIccid);
@@ -605,6 +606,7 @@ module.exports.alarmPdfStockPile = async (openTime, closeTime, scales, plcIccid,
         const myflowObject = await flowObjectDataPLC(postgress_start, postgress_end, startdate, enddate, plcFlow, runningtph, plcIccid);
 
 
+
         //handle shift tons 
         let tonnage = await handleAlarmStockpileShiftons(myflowBuffer, plcIccid, shift, postgress_start, postgress_end, startdate, enddate, scales, monthstart, primaryScalesArray, mtd_target, scaleType, canvas, virtualDatapoints, maxUtilization);
 
@@ -613,6 +615,8 @@ module.exports.alarmPdfStockPile = async (openTime, closeTime, scales, plcIccid,
 
 
         var shift_statisticsPie = [];
+
+        
 
         if (tonnage.site_had_production) {
             shift_statisticsPie = await createDonutChart(shiftStats.shiftstats, canvas);
@@ -635,3 +639,29 @@ module.exports.alarmPdfStockPile = async (openTime, closeTime, scales, plcIccid,
 
 }
 
+
+module.exports.hourlyScales = async (startTime, endTime, scales, primaryScalesArray, plcIccid, shift, formulas) => {
+    try {
+
+    
+        // Adjust time for Postgres
+        const postgressStart = subtractTwoHours(startTime);
+        const postgressEnd = subtractTwoHours(endTime);
+
+        // Determine start and end dates based on shift
+        const startDate = shift === 'day' ? getCurrentDateFormatted() : getPreviousDateFormatted();
+        const endDate = getCurrentDateFormatted();
+
+        
+
+        // Handle tonnage calculations
+        const tonnage = await handleHourlyShiftons(postgressStart, postgressEnd, startDate, endDate, scales, primaryScalesArray, plcIccid, shift,formulas);
+
+
+        console.log(tonnage)
+
+    } catch (error) {
+        console.error(`Error processing parallel scale in shift utility: ${error}`);
+        throw error;
+    }
+};

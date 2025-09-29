@@ -103,11 +103,9 @@ const shiftTonsplc = async (startTime, endTime, startdate, enddate, title, plcIc
           
           `;
 
+
     const result = await db.query(query);
-
-
     const shifttons = result.rows.map(row => row.shifttons);
-
 
     return shifttons;
   } catch (error) {
@@ -728,8 +726,6 @@ exports.checkStockpileTotalizerReset = async (modbus, iccid) => {
 		order by date desc
         limit 2
       `;
-
-      
       
     const result = await db.query(query);
 
@@ -1061,6 +1057,7 @@ exports.ActualEnd = async (startTime, endTime, startdate, enddate, running_tph, 
 
 exports.ActualPlcStart = async (startTime, endTime, startdate, enddate, plcIccid, flowtitle, runningtph) => {
   try {
+
     const query = `WITH FlowData AS (
           SELECT
             title,
@@ -1094,6 +1091,7 @@ exports.ActualPlcStart = async (startTime, endTime, startdate, enddate, plcIccid
      
       `;
 
+      
 
     const result = await db.query(query);
 
@@ -1871,7 +1869,6 @@ exports.monthToPlcDate = async (startTime, endTime, startdate, enddate, title, p
     ON top_value.iccid = bottom_value.iccid;
 `;
 
-
     const result = await db.query(query);
 
     const monthToDate = result.rows.map(row => ({
@@ -1889,6 +1886,47 @@ exports.monthToPlcDate = async (startTime, endTime, startdate, enddate, title, p
 
 }
 
+
+exports.StockpileMtd = async (startTime, endTime, startdate, enddate, title, plcIccid) => {
+  try {
+
+
+
+    const query = ` 
+            SELECT
+                iccid,
+                value::numeric AS mtdTopValue,
+                date
+            FROM
+                    public.devicelogs_production_${plcIccid}
+            WHERE
+               (datasourcekey = 'modbus-8-10')
+                AND date < '${enddate} ${endTime}'
+            ORDER BY
+                date DESC
+            LIMIT 1
+  
+`;
+
+
+
+    const result = await db.query(query);
+
+
+    const monthToDate = result.rows.map(row => ({
+      iccid: row.iccid,
+      month_to_date: row.month_todate
+    }));
+
+
+    return (result.rows[0].mtdtopvalue);
+
+  } catch (error) {
+    console.error('Error listing tables:', error);
+    throw error;
+  }
+
+}
 
 //month to date with defined opening
 exports.monthToDatewithOpeningsToDate = async (endTime, enddate, iccid, openingvalue, shiftFtp) => {
@@ -1955,7 +1993,6 @@ exports.monthToDatePlcwithOpeningsToDate = async (endTime, enddate, title, plcIc
   LIMIT 1;
 
     `;
-
 
 
     const result = await db.query(query);

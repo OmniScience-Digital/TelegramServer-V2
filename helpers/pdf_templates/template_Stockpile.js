@@ -3,10 +3,10 @@ const fs = require("fs");
 const blobStream = require('blob-stream');
 const { generateHeader, drawRectangleWithNoText,generatePlantName } = require('../pdf_Components/pdf_header');
 const { generateFooter } = require('../pdf_Components/pdf_footer');
-const { drawRectangleWithText, createDefinitionsTable, drawStockpileHeaderRectangles, Stockpiletable, mtdtable, flowtable,StockpileLabqualitiestable, createSTatisticsTable, noProduction } = require('../pdf_Components/pdf_tables')
+const { drawRectangleWithText, createDefinitionsTable, drawStockpileHeaderRectangles, Stockpiletable, flowtable,StockpileLabqualitiestable, createSTatisticsTable, noProduction } = require('../pdf_Components/pdf_tables')
 const { dataDefinitions } = require('../../resources/data.resource');
 
-const { generateflowShifttonsGraph, drawPieCharts,generateTotalizerGraph } = require('../pdf_Components/plot_graphs')
+const { generateflowShifttonsGraph, drawPieCharts } = require('../pdf_Components/plot_graphs')
 
 
 let customerInformationTop;
@@ -58,7 +58,7 @@ async function PDFTableGenerator(pdfdata,sitedata, sitename, filePath, reportHea
 
       }
 
-
+  
     //draw , header rectangles
     drawStockpileHeaderRectangles(doc, reportHeaderRenames,sitedata, pdfdata, (customerInformationTop + 40));
 
@@ -124,7 +124,6 @@ async function PDFTableGenerator(pdfdata,sitedata, sitename, filePath, reportHea
     //generateTotalizerGraph(doc,  pdfdata.shiftgraphBuffer, 540)
 
     
-
 
      drawRectangleWithText(doc, 'LAB QUALITIES', customerInformationTop = 700);
 

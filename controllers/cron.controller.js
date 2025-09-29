@@ -1,9 +1,9 @@
 const { performance } = require('perf_hooks');
-const { singleScale, seriesScale, parallelScale, plcScale,plcParallelScale,plcSeriesScale } = require("../utilities/shift_utility");
+const { singleScale, seriesScale, parallelScale, plcScale, plcParallelScale, plcSeriesScale } = require("../utilities/shift_utility");
 const { dertemine_numberofShifts, getCurrentDateFormatted } = require('../utilities/time.utility');
 const { populateObjects } = require('../services/telegram.service');
 const { headers_helper } = require('../helpers/headers.helper');
-const {parseScales}= require('../helpers/scalesCalc.helper');
+const { parseScales } = require('../helpers/scalesCalc.helper');
 const { canvas } = require('../resources/static.headers.resource');
 
 exports.reportdata = async (sites, shift) => {
@@ -13,7 +13,7 @@ exports.reportdata = async (sites, shift) => {
 
     let reportDataArray;
 
-    let item,sitestatus,flag, startTime,  dayStart, primaryScalesArray, endTime, sitename, runningtph, maxUtilization, chatId, totalMonthTarget, scaleType, flowtitle, flowiccid, plcIccid, scales, reportTo, email,shiftFtp;
+    let item, sitestatus, flag, startTime, dayStart, primaryScalesArray, endTime, sitename, runningtph, maxUtilization, chatId, totalMonthTarget, scaleType, flowtitle, flowiccid, plcIccid, scales, reportTo, email, shiftFtp;
 
     let items = sites;
 
@@ -24,14 +24,12 @@ exports.reportdata = async (sites, shift) => {
         sitename = item.sitename?.S || '';
 
 
-        //  if (sitename !== 'Mzimkhulu') continue;
-       
-        console.log('sitename' + ' : '+sitename);
+        //   if (sitename !== 'Ilangabi Colliery') continue;
+
+        console.log('sitename' + ' : ' + sitename);
 
         // Get current running date
         let enddate = getCurrentDateFormatted();
-
-
 
 
         // Handle shift times
@@ -45,7 +43,9 @@ exports.reportdata = async (sites, shift) => {
 
 
 
-        shift = (shift === 'day2') ? shift = 'day' : shift;
+
+        const effectiveShift = shift === 'day2' ? 'day' : shift;
+
 
         //check if report runs 24 hours
 
@@ -60,25 +60,25 @@ exports.reportdata = async (sites, shift) => {
         plcIccid = item.plcIccid?.S || '';
         reportTo = item.reportTo?.S || '';
         email = item.email?.S || '';
-        shiftFtp=item.shiftFtp?.S||'';
-        sitestatus =item.sitestatus?.S||'';
-        flag=sitestatus;
+        shiftFtp = item.shiftFtp?.S || '';
+        sitestatus = item.sitestatus?.S || '';
+        flag = sitestatus;
 
-   
 
- 
+
+
         //sent to test group when in dev mode.
-        chatId = ((process.env.NODE_ENV==="development")||(flag!=='prod'))?(process.env.chartIDTest):(item.telegramid?.S || '');
+        chatId = ((process.env.NODE_ENV === "development") || (flag !== 'prod')) ? (process.env.chartIDTest) : (item.telegramid?.S || '');
 
-        
-        const { mtd_target, shifts_Ran } = dertemine_numberofShifts(item.dayStart?.S, item.nightStart?.S, item.extraShiftStart?.S, totalMonthTarget, monthstart, shift, enddate);
+
+        const { mtd_target, shifts_Ran } = dertemine_numberofShifts(item.dayStart?.S, item.nightStart?.S, item.extraShiftStart?.S, totalMonthTarget, monthstart, effectiveShift, enddate);
 
         // Destructure fore arrays and objects
         const { formulas, primaryScales, virtualDatapoints, reportHeaderRenames, cyclonegraph, plcFlow } = item;
 
         scales = item.Telegramscales || [];
 
-        
+
 
         primaryScalesArray = primaryScales?.L?.map((scale) => scale.S) || [];
         const plcflowArray = parseScales(plcFlow);
@@ -92,50 +92,49 @@ exports.reportdata = async (sites, shift) => {
 
         startDay = formattedDate + ' ,' + dayStart;
 
-        
-    
+
         try {
             if (!plcIccid) {
                 switch (scaleType) {
                     case 'single':
                         console.log('Processing single scale type');
 
-                        reportDataArray = await singleScale(startTime, endTime, scales, monthstart, shift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints,shiftFtp);
+                        reportDataArray = await singleScale(startTime, endTime, scales, monthstart, effectiveShift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints, shiftFtp);
                         break;
                     case 'series':
                         console.log('Processing series scale type');
-                        reportDataArray = await seriesScale(startTime, endTime, scales, monthstart, flowtitle, flowiccid, shift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints,shiftFtp);
+                        reportDataArray = await seriesScale(startTime, endTime, scales, monthstart, flowtitle, flowiccid, effectiveShift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints, shiftFtp);
                         break;
                     case 'parallel':
                         console.log('Processing parallel scale type');
-                        reportDataArray = await parallelScale(startTime, endTime, scales, monthstart, flowtitle, flowiccid, shift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints,shiftFtp);
+                        reportDataArray = await parallelScale(startTime, endTime, scales, monthstart, flowtitle, flowiccid, effectiveShift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints, shiftFtp);
                         break;
                 }
             } else {
                 if (scaleType === 'parallel') {
                     console.log('Processing plc parallel scale type'); // Additional log for debugging
-                   
-                    reportDataArray = await plcParallelScale(startTime, endTime, scales, plcIccid, plcflowArray,flowtitle, flowiccid, cyclonegraphArray, monthstart, shift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints);
-                }else if (scaleType === 'series') {
+
+                    reportDataArray = await plcParallelScale(startTime, endTime, scales, plcIccid, plcflowArray, flowtitle, flowiccid, cyclonegraphArray, monthstart, effectiveShift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints);
+                } else if (scaleType === 'series') {
                     console.log('Processing plc series scale type'); // Additional log for debugging
-                    reportDataArray = await plcSeriesScale(startTime, endTime, scales, plcIccid, plcflowArray,flowtitle, flowiccid, cyclonegraphArray, monthstart, shift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints);
+                    reportDataArray = await plcSeriesScale(startTime, endTime, scales, plcIccid, plcflowArray, flowtitle, flowiccid, cyclonegraphArray, monthstart, effectiveShift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints);
                 } else {
                     console.log('Processing plc  scale type'); // Additional log for debugging
-                    reportDataArray = await plcScale(startTime, endTime, scales, plcIccid, plcflowArray, cyclonegraphArray, monthstart, shift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints);
+                    reportDataArray = await plcScale(startTime, endTime, scales, plcIccid, plcflowArray, cyclonegraphArray, monthstart, effectiveShift, primaryScalesArray, runningtph, maxUtilization, mtd_target, scaleType, canvas, formulas, virtualDatapoints);
                 }
             }
-        
+
             // Additional header handling if needed
-            let { reportnameDate, reportDateTime } = await headers_helper(shift, reportDataArray, monthstart, endTime, startTime);
+            let { reportnameDate, reportDateTime } = await headers_helper(effectiveShift, reportDataArray, monthstart, endTime, startTime);
             await populateObjects(reportDataArray, chatId, sitename, reportHeaderRenames, reportDateTime, reportTo, email, reportnameDate, flag);
-        
-           
+
+
         } catch (error) {
             console.error(`Error processing ${sitename}:`, error);
             // Optionally continue to the next iteration without stopping the loop
             continue;
         }
-        
+
     }
 
     const end = performance.now();

@@ -3,8 +3,7 @@ module.exports.groupByTimeIntervals = (timedata, tonsdata) => {
 
     var len = timedata.length
 
-    
-
+  
     //if (timedata.length !== tonsdata.length) return;
 
     // Split the startTime string into hours and minutes
@@ -48,7 +47,39 @@ module.exports.groupByTimeIntervals = (timedata, tonsdata) => {
         }
     }
  
+      
+
     
     return groupedData;
 };
+
+
+// module.exports.groupByTimeIntervals = (timedata, tonsdata) => {
+//     const len = timedata.length;
+
+//     // Calculate end time (unchanged)
+//     const [startHour, startMinute] = timedata[len - 1].split(':');
+//     const hour = parseInt(startHour, 10);
+//     const minute = parseInt(startMinute, 10);
+//     const newHour = (hour + 1) % 24;
+//     const endTime = `${newHour < 10 ? '0' : ''}${newHour}:${minute < 10 ? '0' : ''}${minute}`;
+
+//     // Store results in an array (to preserve order & duplicates)
+//     const groupedData = [];
+
+//     // Generate intervals and map to tonsdata
+//     for (let i = 0; i < timedata.length - 1; i++) {
+//         const intervalStart = timedata[i];
+//         const intervalEnd = timedata[i + 1];
+//         const interval = `${intervalStart} - ${intervalEnd}`;
+        
+//         groupedData.push({
+//             interval,
+//             value: tonsdata[i] // Directly map to the corresponding value
+//         });
+//     }
+
+//     console.log(groupedData);
+//     return groupedData;
+// };
 

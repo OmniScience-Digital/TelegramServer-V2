@@ -7,6 +7,8 @@ exports.Mqttcontroller = async (req, res) => {
         // Access the id from the request body
         const { csvData, adMapping, address } = req.body;
 
+        console.log(req.body);
+
         let date;
         let iccid;
 
@@ -92,13 +94,14 @@ exports.Mqttcontroller = async (req, res) => {
         }
 
 
+
         try {
 
            // console.log(iccid)
              //console.log(combinedResult)
             // Publish MQTT message
             // await processData(combinedResult, '7082229037010123040');
-           await processData(combinedResult, iccid);
+          // await processData(combinedResult, iccid);
         } catch (error) {
             console.error(`Error publishing MQTT message: ${error}`);
             throw error; // Optionally rethrow to propagate the error further
@@ -115,21 +118,44 @@ exports.Mqttcontroller = async (req, res) => {
 
 
 
-
-
 function parseDate(dateString) {
-    
-    // Check if the date string is in the format "YYYY/MM/DD HH:MM"
-    let isoDate;
-    if (/\d{4}\/\d{2}\/\d{2} \d{2}:\d{2}/.test(dateString)) {
-        isoDate = new Date(dateString.replace(/\//g, '-')).toISOString();
-    } else if (/\d{2}\/\d{2}\/\d{4} \d{2}:\d{2}/.test(dateString)) {
-        // If the date is in the format "DD/MM/YYYY HH:MM"
-        let parts = dateString.split(/[\s/:]+/);
-        isoDate = new Date(parts[2], parts[1] - 1, parts[0], parts[3], parts[4]).toISOString();
-    } else {
-        throw new Error("Unsupported date format");
+    // Trim whitespace first
+    dateString = dateString.trim();
+
+    // If it's already in ISO format, return as-is
+    if (dateString.endsWith('Z') || dateString.includes('T')) {
+        return dateString;
     }
 
-    return isoDate;
+    // Handle formats with YYYY/MM/DD
+    if (/^\d{4}\/\d{2}\/\d{2} \d{1,2}:\d{2}/.test(dateString)) {
+        // Normalize the time part (fix "4:000" to "04:00")
+        const [datePart, timePart] = dateString.split(' ');
+        let [hours, minutes] = timePart.split(':');
+        hours = hours.padStart(2, '0');
+        minutes = minutes.substring(0, 2).padStart(2, '0'); // Take first 2 digits if more exist
+        const normalizedTime = `${hours}:${minutes}`;
+        
+        return new Date(`${datePart.replace(/\//g, '-')}T${normalizedTime}:00`).toISOString();
+    }
+    
+    // Handle formats with DD/MM/YYYY
+    if (/^\d{2}\/\d{2}\/\d{4} \d{1,2}:\d{2}/.test(dateString)) {
+        const [datePart, timePart] = dateString.split(' ');
+        const [day, month, year] = datePart.split('/');
+        let [hours, minutes] = timePart.split(':');
+        hours = hours.padStart(2, '0');
+        minutes = minutes.substring(0, 2).padStart(2, '0');
+        const normalizedTime = `${hours}:${minutes}`;
+        
+        return new Date(`${year}-${month}-${day}T${normalizedTime}:00`).toISOString();
+    }
+
+    // Handle formats with YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2} \d{1,2}:\d{2}/.test(dateString)) {
+        const normalized = dateString.replace(' ', 'T') + ':00';
+        return new Date(normalized).toISOString();
+    }
+
+    throw new Error(`Unsupported date format: ${dateString}`);
 }

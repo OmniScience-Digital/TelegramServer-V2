@@ -1,21 +1,10 @@
 const cron = require('node-cron');
-
 const {scanDynamoDBTableNight } = require('../../repositories/dynamodb_repository');
 const report_controller = require('../../controllers/cron.controller');
-const Statusreportcontroller = require('../../controllers/internalStatusreport.controller');
-
 
 // Set the time zone to Johannesburg, South Africa (SAST)
 const timeZone = 'Africa/Johannesburg';
 
-
-//internal status report
-cron.schedule('0 12 * * *', async () => {
-    
-    let triggerStart ="00:00",triggerEnd= "12:00",shift='night';
-    await Statusreportcontroller.Statusreportcontroller(triggerStart,triggerEnd,shift);
-
-}, { timezone: timeZone });
 
 cron.schedule('0 2 * * *', async () => {
     // This cron job triggers every day at 2 AM SAST

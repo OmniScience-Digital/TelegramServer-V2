@@ -112,7 +112,6 @@ const dertemine_numberofShifts = (shift1, shift2, shift3, totalmonttarget, month
   // Calculate the difference in milliseconds
   const differenceMs = endingDate - startingDate;
 
-  
 
    let shifts_Ran=0;
 
@@ -128,9 +127,11 @@ const dertemine_numberofShifts = (shift1, shift2, shift3, totalmonttarget, month
     
   }
     
+
   //get target perShift 
   var targetPerShift = parseFloat(totalmonttarget) / (31 * numShifts);
 
+  
  var mtd_target = parseFloat(targetPerShift * shifts_Ran);
 
 
@@ -258,54 +259,6 @@ function calculateTimeIntervals(startDate, startTime, endDate, endTime) {
 }
 
 
-// function calculateTimeIntervals(startDate, startTime, endDate, endTime) {
-//   function parseDateTime(dateStr, timeStr) {
-//     const [month, day, year] = dateStr.split('/').map(Number);
-//     const [h, m] = timeStr.split(':').map(Number);
-//     return new Date(year, month - 1, day, h, m);
-//   }
-
-//   function format(date) {
-//     return `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`;
-//   }
-
-//   function roundToNextHour(date) {
-//     const rounded = new Date(date);
-//     if (rounded.getMinutes() > 0 || rounded.getSeconds() > 0 || rounded.getMilliseconds() > 0) {
-//       rounded.setHours(rounded.getHours() + 1);
-//       rounded.setMinutes(0);
-//       rounded.setSeconds(0);
-//       rounded.setMilliseconds(0);
-//     }
-//     return rounded;
-//   }
-
-//   const start = parseDateTime(startDate, startTime);
-//   const end = parseDateTime(endDate, endTime);
-//   let intervals = [];
-
-//   // Add the exact start time
-//   intervals.push(format(start));
-
-//   // Round the start time to the next hour if it's not already at an exact hour
-//   let current = roundToNextHour(start);
-
-//   // Generate intervals at exact hour marks
-//   while (current <= end) {
-//     if (current > start) { // Avoid duplicating the start time
-//       intervals.push(format(current));
-//     }
-//     current.setHours(current.getHours() + 1); // Increment by 1 hour
-//   }
-
-//   // Add the exact end time if it's not already included
-//   const lastInterval = intervals[intervals.length - 1];
-//   if (lastInterval !== format(end)) {
-//     intervals.push(format(end));
-//   }
-
-//   return intervals;
-// }
 
 function getCurrentTimeShift() {
   const now = new Date();
